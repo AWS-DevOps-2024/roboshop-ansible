@@ -64,5 +64,9 @@
     - name: Print the Procuct count 
       ansible.builtin.debug:
         msg: "Procuct Count is {{product_count}}"
+
+    - name: Load Ctaalogue data
+      ansible.builtin.shell: mongo --host mongodb.learndevops.space < /app/schema/catalogue.js
+    
     
     

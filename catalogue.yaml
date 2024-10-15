@@ -71,6 +71,7 @@
     
     - name: Enable and start the catalogue
       ansible.builtin.service:
+        name: catalogue
         enabled: yes
         status: started
     

@@ -62,13 +62,13 @@
         name: mongodb-org-shell
         state: present 
 
-    - name: get categories product count
+    - name: get users count
       ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("user"); db.users.count()'
       register: user_count
 
-    # - name: Print the Procuct count 
+    # - name: Print the Users count 
     #   ansible.builtin.debug:
-    #     msg: "Procuct Count is {{user_count}}"
+    #     msg: "Users Count is {{user_count}}"
 
     - name: Load user data
       ansible.builtin.command: mongo --host mongodb.learndevops.space < /app/schema/user.js

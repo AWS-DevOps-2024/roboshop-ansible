@@ -67,7 +67,7 @@
         msg: "Cities count is {{cities_schema}}"
 
     - name: Load shipping into mysql 
-      ansible.builtin.command: mysql -h mysql.learndevops.space -uroot -p{{mysql_password}} < /app/schema/shipping.sql 
+      ansible.builtin.shell: mysql -h mysql.learndevops.space -uroot -p{{mysql_password}} < /app/schema/shipping.sql 
       when: cities_schema.stdout == "0"
 
     - name: Enable and start mysql 

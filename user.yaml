@@ -63,7 +63,7 @@
         state: present 
 
     - name: get users count
-      ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("user"); db.users.count()'
+      ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("users"); db.users.count()'
       register: user_count
 
     # - name: Print the Users count 

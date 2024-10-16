@@ -1,0 +1,83 @@
+- name: user
+  hosts: user
+  become: yes
+  tasks:
+    - name: disable the nodejs 10 and enable nodejs 18
+      # ansible.builtin.command: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
+      ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
+    
+    - name: Install nodejs
+      ansible.builtin.package:
+        name: nodejs
+        state: present
+
+    - name: Create roboshop user
+      ansible.builtin.user:
+        name: roboshop
+
+    - name: recursively remove app directory
+      ansible.builtin.file:
+        path: /app
+        state: absent 
+
+    - name: create /app directory
+      ansible.builtin.file:
+        path: /app 
+        state: directory
+
+    - name: download user.zip
+      ansible.builtin.get_url:
+        url: https://roboshop-builds.s3.amazonaws.com/user.zip
+        dest: /tmp
+
+    - name: extract user.zip
+      ansible.builtin.unarchive:
+        src: /tmp/user.zip
+        dest: /app
+        remote_src: yes 
+
+    - name: install dependencies
+      ansible.builtin.command: npm install 
+      args:
+        chdir: /app 
+
+    - name: copy the user servcie 
+      ansible.builtin.copy:
+        src: user.service
+        dest: /etc/systemd/system/user.service
+
+    - name: Daemon reload
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+# Let's start the user after the data is loaded
+
+    - name: Copy mongodb repo
+      ansible.builtin.copy:
+        src: mongodb.repo
+        dest: /etc/yum.repos.d/mongodb.repo
+
+    - name: install mongodb client
+      ansible.builtin.package:
+        name: mongodb-org-shell
+        state: present 
+
+    - name: get categories product count
+      ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("user"); db.user.count()'
+      register: user_count
+
+    # - name: Print the Procuct count 
+    #   ansible.builtin.debug:
+    #     msg: "Procuct Count is {{user_count}}"
+
+    - name: Load Ctaalogue data
+      ansible.builtin.command: mongo --host mongodb.learndevops.space < /app/schema/user.js
+      when: user_count.stdout == "0"
+    
+    - name: Enable and start the user
+      ansible.builtin.service:
+        name: user
+        enabled: yes
+        state: started
+    
+    

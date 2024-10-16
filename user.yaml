@@ -63,14 +63,14 @@
         state: present 
 
     - name: get categories product count
-      ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("user"); db.user.count()'
+      ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("user"); db.users.count()'
       register: user_count
 
     # - name: Print the Procuct count 
     #   ansible.builtin.debug:
     #     msg: "Procuct Count is {{user_count}}"
 
-    - name: Load Ctaalogue data
+    - name: Load user data
       ansible.builtin.command: mongo --host mongodb.learndevops.space < /app/schema/user.js
       when: user_count.stdout == "0"
     

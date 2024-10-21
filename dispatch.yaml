@@ -21,21 +21,25 @@
         path: /app 
         state: directory
 
-    - name: download payment.zip
+    - name: download dispatch.zip
       ansible.builtin.get_url:
-        url: https://roboshop-builds.s3.amazonaws.com/payment.zip
+        url: https://roboshop-builds.s3.amazonaws.com/dispatch.zip
         dest: /tmp
 
-    - name: extract payment.zip
+    - name: extract dispatch.zip
       ansible.builtin.unarchive:
-        src: /tmp/payment.zip
+        src: /tmp/dispatch.zip
         dest: /app
         remote_src: yes 
 
-    - name: install dependencies
-      ansible.builtin.shell: go mod init dispatch ; go get ; go build
+    - name: Install the Python packages 
+      ansible.builtin.command: "{{item}}"
+      loop:
+        - go mod init dispatch
+        - go get 
+        - go build
       args:
-        chdir: /app 
+          chdir: /app 
 
     - name: copy dispatch.service 
       ansible.builtin.copy: 
